@@ -6,6 +6,7 @@ defmodule Day05.MixProject do
       app: :day05,
       version: "0.1.0",
       elixir: "~> 1.17",
+      default_task: "main",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
