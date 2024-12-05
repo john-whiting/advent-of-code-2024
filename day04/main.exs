@@ -13,8 +13,7 @@ defmodule Day04 do
     (if match?({<<"X", _::binary>>, <<_::binary-size(1), "M", _::binary>>, <<_::binary-size(2), "A", _::binary>>, <<_::binary-size(3), "S">>}, input), do: 1, else: 0) +
     (if match?({<<"S", _::binary>>, <<_::binary-size(1), "A", _::binary>>, <<_::binary-size(2), "M", _::binary>>, <<_::binary-size(3), "X">>}, input), do: 1, else: 0) +
     (if match?({<<_::binary-size(3), "X">>, <<_::binary-size(2), "M", _::binary>>, <<_::binary-size(1), "A", _::binary>>, <<"S", _::binary>>}, input), do: 1, else: 0) +
-    (if match?({<<_::binary-size(3), "S">>,<<_::binary-size(2), "A", _::binary>>,<<_::binary-size(1), "M", _::binary>>,<<"X", _::binary>>}, input), do: 1, else: 0) +
-    0
+    (if match?({<<_::binary-size(3), "S">>,<<_::binary-size(2), "A", _::binary>>,<<_::binary-size(1), "M", _::binary>>,<<"X", _::binary>>}, input), do: 1, else: 0)
   end
 
   def chunk_every_2d(grid, count, step, filler \\ "-") when is_list(grid) and is_integer(count) and is_integer(step) do
