@@ -11,25 +11,27 @@ defmodule Day06 do
   def next_pos(:right, {y, x}), do: {y, x + 1}
 
   # Base cases of stepping out of the grid
-  def step(:up, visits, _, {y, _, _, _}, pos = {y, _}) when is_integer(y), do: MapSet.put(visits, pos)
-  def step(:down, visits, _, {_, _, y, _}, pos = {y, _}) when is_integer(y), do: MapSet.put(visits, pos)
-  def step(:left, visits, _, {_, x, _, _}, pos = {_, x}) when is_integer(x), do: MapSet.put(visits, pos)
-  def step(:right, visits, _, {_, _, _, x}, pos = {_, x}) when is_integer(x), do: MapSet.put(visits, pos)
-  def step(direction, visits, blockers, grid_bounds, pos) when is_atom(direction) do
+  def step(direction, blockers, grid_bounds, pos, visits \\ MapSet.new())
+  def step(:up, _, {y, _, _, _}, pos = {y, _}, visits) when is_integer(y), do: MapSet.put(visits, pos)
+  def step(:down, _, {_, _, y, _}, pos = {y, _}, visits) when is_integer(y), do: MapSet.put(visits, pos)
+  def step(:left, _, {_, x, _, _}, pos = {_, x}, visits) when is_integer(x), do: MapSet.put(visits, pos)
+  def step(:right, _, {_, _, _, x}, pos = {_, x}, visits) when is_integer(x), do: MapSet.put(visits, pos)
+  def step(direction, blockers, grid_bounds, pos, visits) when is_atom(direction) do
     next = next_pos(direction, pos)
     if MapSet.member?(blockers, next) do
-      step(@next_direction[direction], visits, blockers, grid_bounds, pos)
+      step(@next_direction[direction], blockers, grid_bounds, pos, visits)
     else
-      step(direction, MapSet.put(visits, pos), blockers, grid_bounds, next)
+      step(direction, blockers, grid_bounds, next, MapSet.put(visits, pos))
     end
   end
 
   # Base cases of stepping out of the grid
-  def step_is_loop(:up, _, _, {y, _, _, _}, {y, _}) when is_integer(y), do: false
-  def step_is_loop(:down, _, _, {_, _, y, _}, {y, _}) when is_integer(y), do: false
-  def step_is_loop(:left, _, _, {_, x, _, _}, {_, x}) when is_integer(x), do: false
-  def step_is_loop(:right, _, _, {_, _, _, x}, {_, x}) when is_integer(x), do: false
-  def step_is_loop(direction, visits, blockers, grid_bounds, pos) when is_atom(direction) do
+  def step_is_loop(direction, blockers, grid_bounds, pos, visits \\ %{})
+  def step_is_loop(:up, _, {y, _, _, _}, {y, _}, _) when is_integer(y), do: false
+  def step_is_loop(:down, _, {_, _, y, _}, {y, _}, _) when is_integer(y), do: false
+  def step_is_loop(:left, _, {_, x, _, _}, {_, x}, _) when is_integer(x), do: false
+  def step_is_loop(:right, _, {_, _, _, x}, {_, x}, _) when is_integer(x), do: false
+  def step_is_loop(direction, blockers, grid_bounds, pos, visits) when is_atom(direction) do
     next = next_pos(direction, pos)
     directions_visited = Map.get(visits, pos, MapSet.new())
 
@@ -38,9 +40,9 @@ defmodule Day06 do
     else
       new_visits = Map.put(visits, pos, MapSet.put(directions_visited, direction))
       if MapSet.member?(blockers, next) do
-        step_is_loop(@next_direction[direction], new_visits, blockers, grid_bounds, pos)
+        step_is_loop(@next_direction[direction], blockers, grid_bounds, pos, new_visits)
       else
-        step_is_loop(direction, new_visits, blockers, grid_bounds, next)
+        step_is_loop(direction, blockers, grid_bounds, next, new_visits)
       end
     end
   end
@@ -74,12 +76,12 @@ defmodule Day06 do
 
   def part1(input) do
     {grid_bounds, blockers, pos} = build_grid_info(input)
-    step(:up, MapSet.new(), blockers, grid_bounds, pos) |> MapSet.size
+    step(:up, blockers, grid_bounds, pos) |> MapSet.size
   end
   def part2(input) do
     {grid_bounds, blockers, pos} = build_grid_info(input)
-    path = step(:up, MapSet.new(), blockers, grid_bounds, pos)
-    Task.async_stream(path, &(if step_is_loop(:up, %{}, MapSet.put(blockers, &1), grid_bounds, pos), do: 1, else: 0))
+    path = step(:up, blockers, grid_bounds, pos)
+    Task.async_stream(path, &(if step_is_loop(:up, MapSet.put(blockers, &1), grid_bounds, pos), do: 1, else: 0))
       |> Stream.map(fn {:ok, val} -> val end)
       |> Enum.sum()
   end
