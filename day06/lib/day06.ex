@@ -26,12 +26,12 @@ defmodule Day06 do
   end
 
   # Base cases of stepping out of the grid
-  def step_is_loop(direction, blockers, grid_bounds, pos, visits \\ %{})
-  def step_is_loop(:up, _, {y, _, _, _}, {y, _}, _) when is_integer(y), do: false
-  def step_is_loop(:down, _, {_, _, y, _}, {y, _}, _) when is_integer(y), do: false
-  def step_is_loop(:left, _, {_, x, _, _}, {_, x}, _) when is_integer(x), do: false
-  def step_is_loop(:right, _, {_, _, _, x}, {_, x}, _) when is_integer(x), do: false
-  def step_is_loop(direction, blockers, grid_bounds, pos, visits) when is_atom(direction) do
+  def is_loop?(direction, blockers, grid_bounds, pos, visits \\ %{})
+  def is_loop?(:up, _, {y, _, _, _}, {y, _}, _) when is_integer(y), do: false
+  def is_loop?(:down, _, {_, _, y, _}, {y, _}, _) when is_integer(y), do: false
+  def is_loop?(:left, _, {_, x, _, _}, {_, x}, _) when is_integer(x), do: false
+  def is_loop?(:right, _, {_, _, _, x}, {_, x}, _) when is_integer(x), do: false
+  def is_loop?(direction, blockers, grid_bounds, pos, visits) when is_atom(direction) do
     next = next_pos(direction, pos)
     directions_visited = Map.get(visits, pos, MapSet.new())
 
@@ -40,9 +40,9 @@ defmodule Day06 do
     else
       new_visits = Map.put(visits, pos, MapSet.put(directions_visited, direction))
       if MapSet.member?(blockers, next) do
-        step_is_loop(@next_direction[direction], blockers, grid_bounds, pos, new_visits)
+        is_loop?(@next_direction[direction], blockers, grid_bounds, pos, new_visits)
       else
-        step_is_loop(direction, blockers, grid_bounds, next, new_visits)
+        is_loop?(direction, blockers, grid_bounds, next, new_visits)
       end
     end
   end
@@ -81,7 +81,7 @@ defmodule Day06 do
   def part2(input) do
     {grid_bounds, blockers, pos} = build_grid_info(input)
     path = step(:up, blockers, grid_bounds, pos)
-    Task.async_stream(path, &(if step_is_loop(:up, MapSet.put(blockers, &1), grid_bounds, pos), do: 1, else: 0))
+    Task.async_stream(path, &(if is_loop?(:up, MapSet.put(blockers, &1), grid_bounds, pos), do: 1, else: 0))
       |> Stream.map(fn {:ok, val} -> val end)
       |> Enum.sum()
   end

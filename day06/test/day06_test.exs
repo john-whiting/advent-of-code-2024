@@ -20,13 +20,13 @@ defmodule Day06Test do
   test "step right leave grid", do: assert Day06.step(:right, MapSet.new(), {0, 0, 10, 10}, {5, 10}) == MapSet.new([{5, 10}])
 
   test "step is loop" do
-    assert Day06.step_is_loop(
+    assert Day06.is_loop?(
       :up,
       MapSet.new([{0, 1}, {2, 0}, {1, 3}, {3, 2}]),
       {0, 0, 3, 3},
       {1, 1}
     ) == true
-    assert Day06.step_is_loop(
+    assert Day06.is_loop?(
       :up,
       MapSet.new([{0, 1}, {1, 0}, {1, 3}, {3, 2}]),
       {0, 0, 3, 3},
