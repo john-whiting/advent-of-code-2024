@@ -10,12 +10,14 @@ defmodule Day06 do
   def next_pos(:left, {y, x}), do: {y, x - 1}
   def next_pos(:right, {y, x}), do: {y, x + 1}
 
-  # Base cases of stepping out of the grid
+  defguard is_edge(grid_bounds, pos) when
+    elem(grid_bounds, 0) == elem(pos, 0) or
+    elem(grid_bounds, 2) == elem(pos, 0) or
+    elem(grid_bounds, 1) == elem(pos, 1) or
+    elem(grid_bounds, 3) == elem(pos, 1)
+
   def step(direction, blockers, grid_bounds, pos, visits \\ MapSet.new())
-  def step(:up, _, {y, _, _, _}, pos = {y, _}, visits) when is_integer(y), do: MapSet.put(visits, pos)
-  def step(:down, _, {_, _, y, _}, pos = {y, _}, visits) when is_integer(y), do: MapSet.put(visits, pos)
-  def step(:left, _, {_, x, _, _}, pos = {_, x}, visits) when is_integer(x), do: MapSet.put(visits, pos)
-  def step(:right, _, {_, _, _, x}, pos = {_, x}, visits) when is_integer(x), do: MapSet.put(visits, pos)
+  def step(_, _, grid_bounds, pos, visits) when is_edge(grid_bounds, pos), do: MapSet.put(visits, pos)
   def step(direction, blockers, grid_bounds, pos, visits) when is_atom(direction) do
     next = next_pos(direction, pos)
     if MapSet.member?(blockers, next) do
@@ -25,12 +27,8 @@ defmodule Day06 do
     end
   end
 
-  # Base cases of stepping out of the grid
   def is_loop?(direction, blockers, grid_bounds, pos, visits \\ %{})
-  def is_loop?(:up, _, {y, _, _, _}, {y, _}, _) when is_integer(y), do: false
-  def is_loop?(:down, _, {_, _, y, _}, {y, _}, _) when is_integer(y), do: false
-  def is_loop?(:left, _, {_, x, _, _}, {_, x}, _) when is_integer(x), do: false
-  def is_loop?(:right, _, {_, _, _, x}, {_, x}, _) when is_integer(x), do: false
+  def is_loop?(_, _, grid_bounds, pos, _) when is_edge(grid_bounds, pos), do: false
   def is_loop?(direction, blockers, grid_bounds, pos, visits) when is_atom(direction) do
     next = next_pos(direction, pos)
     directions_visited = Map.get(visits, pos, MapSet.new())
