@@ -14,10 +14,10 @@ defmodule Day06Test do
     }) == {0, 0, 2, 2}
   end
 
-  test "step up leave grid", do: assert Day06.step(:up, %{}, MapSet.new(), {0, 0, 10, 10}, {0, 5}) == 1
-  test "step down leave grid", do: assert Day06.step(:down, %{}, MapSet.new(), {0, 0, 10, 10}, {10, 5}) == 1
-  test "step left leave grid", do: assert Day06.step(:left, %{}, MapSet.new(), {0, 0, 10, 10}, {5, 0}) == 1
-  test "step right leave grid", do: assert Day06.step(:right, %{}, MapSet.new(), {0, 0, 10, 10}, {5, 10}) == 1
+  test "step up leave grid", do: assert Day06.step(:up, MapSet.new(), MapSet.new(), {0, 0, 10, 10}, {0, 5}) == MapSet.new([{0, 5}])
+  test "step down leave grid", do: assert Day06.step(:down, MapSet.new(), MapSet.new(), {0, 0, 10, 10}, {10, 5}) == MapSet.new([{10, 5}])
+  test "step left leave grid", do: assert Day06.step(:left, MapSet.new(), MapSet.new(), {0, 0, 10, 10}, {5, 0}) == MapSet.new([{5, 0}])
+  test "step right leave grid", do: assert Day06.step(:right, MapSet.new(), MapSet.new(), {0, 0, 10, 10}, {5, 10}) == MapSet.new([{5, 10}])
 
   test "step is loop" do
     assert Day06.step_is_loop(

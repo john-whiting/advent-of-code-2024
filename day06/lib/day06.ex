@@ -5,24 +5,22 @@ defmodule Day06 do
     {0, 0, tuple_size(grid) - 1, tuple_size(elem(grid, 0)) - 1}
   end
 
-  def first_visit(visits, pos), do: (if Map.has_key?(visits, pos), do: 0, else: 1)
-
   def next_pos(:up, {y, x}), do: {y - 1, x}
   def next_pos(:down, {y, x}), do: {y + 1, x}
   def next_pos(:left, {y, x}), do: {y, x - 1}
   def next_pos(:right, {y, x}), do: {y, x + 1}
 
   # Base cases of stepping out of the grid
-  def step(:up, visits, _, {y, _, _, _}, {y, x}) when is_integer(y), do: first_visit(visits, {y, x})
-  def step(:down, visits, _, {_, _, y, _}, {y, x}) when is_integer(y), do: first_visit(visits, {y, x})
-  def step(:left, visits, _, {_, x, _, _}, {y, x}) when is_integer(x), do: first_visit(visits, {y, x})
-  def step(:right, visits, _, {_, _, _, x}, {y, x}) when is_integer(x), do: first_visit(visits, {y, x})
+  def step(:up, visits, _, {y, _, _, _}, pos = {y, _}) when is_integer(y), do: MapSet.put(visits, pos)
+  def step(:down, visits, _, {_, _, y, _}, pos = {y, _}) when is_integer(y), do: MapSet.put(visits, pos)
+  def step(:left, visits, _, {_, x, _, _}, pos = {_, x}) when is_integer(x), do: MapSet.put(visits, pos)
+  def step(:right, visits, _, {_, _, _, x}, pos = {_, x}) when is_integer(x), do: MapSet.put(visits, pos)
   def step(direction, visits, blockers, grid_bounds, pos) when is_atom(direction) do
     next = next_pos(direction, pos)
     if MapSet.member?(blockers, next) do
       step(@next_direction[direction], visits, blockers, grid_bounds, pos)
     else
-      first_visit(visits, pos) + step(direction, Map.put(visits, pos, direction), blockers, grid_bounds, next)
+      step(direction, MapSet.put(visits, pos), blockers, grid_bounds, next)
     end
   end
 
@@ -76,18 +74,12 @@ defmodule Day06 do
 
   def part1(input) do
     {grid_bounds, blockers, pos} = build_grid_info(input)
-    step(:up, %{}, blockers, grid_bounds, pos)
+    step(:up, MapSet.new(), blockers, grid_bounds, pos) |> MapSet.size
   end
   def part2(input) do
     {grid_bounds, blockers, pos} = build_grid_info(input)
-    {y0, x0, yf, xf} = grid_bounds
-    Task.async_stream(y0..yf, fn row ->
-      Task.async_stream(x0..xf, fn col ->
-        if step_is_loop(:up, %{}, MapSet.put(blockers, {row, col}), grid_bounds, pos), do: 1, else: 0
-      end)
-        |> Stream.map(fn {:ok, val} -> val end)
-        |> Enum.sum()
-    end)
+    path = step(:up, MapSet.new(), blockers, grid_bounds, pos)
+    Task.async_stream(path, &(if step_is_loop(:up, %{}, MapSet.put(blockers, &1), grid_bounds, pos), do: 1, else: 0))
       |> Stream.map(fn {:ok, val} -> val end)
       |> Enum.sum()
   end
