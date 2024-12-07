@@ -13,36 +13,31 @@ defmodule Day04Test do
       """
     ) == 2
 
-    assert Day04.part1(
-      """
-        MMMSXXMASM
-        MSAMXMSMSA
-        AMXSXMAAMM
-        MSAMASMSMX
-        XMASAMXAMM
-        XXAMMXXAMA
-        SMSMSASXSS
-        SAXAMASAAA
-        MAMMMXMMMM
-        MXMXAXMASX
-      """
-    ) == 18
+    assert Day04.part1(example_input()) == 18
+    assert Day04.part1(file_input()) == 2547
   end
 
   test "part2" do
-    assert Day04.part2(
-      """
-        .M.S......
-        ..A..MSMS.
-        .M.S.MAA..
-        ..A.ASMSM.
-        .M.S.M....
-        ..........
-        S.S.S.S.S.
-        .A.A.A.A..
-        M.M.M.M.M.
-        ..........
-      """
-    ) == 9
+    assert Day04.part2(example_input()) == 9
+    assert Day04.part2(file_input()) == 1939
+  end
+
+  defp example_input() do
+    """
+      MMMSXXMASM
+      MSAMXMSMSA
+      AMXSXMAAMM
+      MSAMASMSMX
+      XMASAMXAMM
+      XXAMMXXAMA
+      SMSMSASXSS
+      SAXAMASAAA
+      MAMMMXMMMM
+      MXMXAXMASX
+    """
+  end
+
+  defp file_input() do
+    File.read!("./specs/day04.txt")
   end
 end

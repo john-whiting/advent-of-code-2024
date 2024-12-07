@@ -35,14 +35,16 @@ defmodule AdventOfCode2024.Day02 do
 
 
     def part1(input) do
-      String.split(input, ["\n", "\r", "\r\n"])
+      String.trim(input)
+        |> String.split(["\n", "\r", "\r\n"])
         |> Stream.map(&parse_line/1)
         |> Stream.filter(&is_report_safe?/1)
         |> Enum.count
     end
 
     def part2(input) do
-      String.split(input, ["\n", "\r", "\r\n"])
+      String.trim(input)
+        |> String.split(["\n", "\r", "\r\n"])
         |> Stream.map(&parse_line/1)
         |> Stream.filter(&is_dapened_report_safe?/1)
         |> Enum.count
