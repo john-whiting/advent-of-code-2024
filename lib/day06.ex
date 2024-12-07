@@ -1,4 +1,4 @@
-defmodule Day06 do
+defmodule AdventOfCode2024.Day06 do
   @next_direction %{:up => :right, :down => :left, :left => :up, :right => :down}
 
   def bounds(grid) when is_tuple(grid) do

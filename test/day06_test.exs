@@ -1,6 +1,6 @@
 defmodule Day06Test do
   use ExUnit.Case
-  doctest Day06
+  alias AdventOfCode2024.Day06, as: Day06
 
   test "bounds" do
     assert Day06.bounds({

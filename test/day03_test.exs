@@ -1,5 +1,6 @@
 defmodule Day03Test do
   use ExUnit.Case
+  alias AdventOfCode2024.Day03, as: Day03
   doctest AdventOfCode2024
 
   test "part1" do

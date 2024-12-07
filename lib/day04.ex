@@ -1,4 +1,4 @@
-defmodule Day04 do
+defmodule AdventOfCode2024.Day04 do
   def mas({<<"M", _::binary-size(1), "M">>, <<_::binary-size(1), "A", _::binary>>, <<"S", _::binary-size(1), "S">>}), do: 1
   def mas({<<"M", _::binary-size(1), "S">>, <<_::binary-size(1), "A", _::binary>>, <<"M", _::binary-size(1), "S">>}), do: 1
   def mas({<<"S", _::binary-size(1), "M">>, <<_::binary-size(1), "A", _::binary>>, <<"S", _::binary-size(1), "M">>}), do: 1
@@ -36,7 +36,7 @@ defmodule Day04 do
       |> String.split
       |> Stream.map(&String.trim/1)
       |> Stream.map(&String.graphemes/1)
-      |> Day04.chunk_every_2d(4, 1, ".")
+      |> chunk_every_2d(4, 1, ".")
       |> Stream.map(&xmas/1)
       |> Enum.sum
   end
@@ -46,7 +46,7 @@ defmodule Day04 do
       |> String.split
       |> Stream.map(&String.trim/1)
       |> Stream.map(&String.graphemes/1)
-      |> Day04.chunk_every_2d(3, 1, ".")
+      |> chunk_every_2d(3, 1, ".")
       |> Stream.map(&mas/1)
       |> Enum.sum
   end

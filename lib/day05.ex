@@ -1,4 +1,4 @@
-defmodule Day05 do
+defmodule AdventOfCode2024.Day05 do
   def parse_rule(line) when is_binary(line) do
     {bef, <<"|", line::binary>>} = Integer.parse(line)
     {aft, _} = Integer.parse(line)

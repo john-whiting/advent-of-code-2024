@@ -1,4 +1,4 @@
-defmodule Day03 do
+defmodule AdventOfCode2024.Day03 do
   def op_mul(arg0, arg1, rest) when is_binary(arg0) and is_binary(arg1) and is_binary(rest) do
     arg0_int = Integer.parse(arg0) |> elem(0)
     arg1_int = Integer.parse(arg1) |> elem(0)

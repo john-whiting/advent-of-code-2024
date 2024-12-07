@@ -1,6 +1,6 @@
 defmodule Day05Test do
   use ExUnit.Case
-  doctest Day05
+  alias AdventOfCode2024.Day05, as: Day05
 
   test "parsed 48|18" do
     assert Day05.parse_rule("48|18") == {48, 18}
