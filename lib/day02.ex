@@ -34,41 +34,15 @@ defmodule Day02 do
     end
 
 
-    def part1(parsed_lines) do
-      parsed_lines
+    def part1(input) do
+      Enum.map(input, &Day02.parse_line/1)
         |> Stream.filter(&is_report_safe?/1)
         |> Enum.count
     end
 
-    def part2(parsed_lines) do
-      parsed_lines
+    def part2(input) do
+      Enum.map(input, &Day02.parse_line/1)
         |> Stream.filter(&is_dapened_report_safe?/1)
         |> Enum.count
     end
 end
-
-true = Day02.is_report_safe?([7, 6, 4, 2, 1])
-false = Day02.is_report_safe?([1, 2, 7, 8, 9])
-false = Day02.is_report_safe?([9, 7, 6, 2, 1])
-false = Day02.is_report_safe?([1, 3, 2, 4, 5])
-false = Day02.is_report_safe?([8, 6, 4, 4, 1])
-true = Day02.is_report_safe?([1, 3, 6, 7, 9])
-
-true = Day02.is_dapened_report_safe?([7, 6, 4, 2, 1])
-false = Day02.is_dapened_report_safe?([1, 2, 7, 8, 9])
-false = Day02.is_dapened_report_safe?([9, 7, 6, 2, 1])
-true = Day02.is_dapened_report_safe?([1, 3, 2, 4, 5])
-true = Day02.is_dapened_report_safe?([8, 6, 4, 4, 1])
-true = Day02.is_dapened_report_safe?([1, 3, 6, 7, 9])
-
-
-parsed_lines = File.stream!("./input.txt")
-  |> Enum.map(&Day02.parse_line/1)
-
-parsed_lines
-  |> Day02.part1
-  |> IO.puts
-
-parsed_lines
-    |> Day02.part2
-    |> IO.puts

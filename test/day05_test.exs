@@ -92,6 +92,6 @@ defmodule Day05Test do
   end
 
   defp file_input() do
-    File.read!("./input.txt")
+    File.read!("./specs/day05.txt")
   end
 end

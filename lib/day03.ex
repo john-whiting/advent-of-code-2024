@@ -55,11 +55,3 @@ defmodule Day03 do
   def part1(input) when is_binary(input), do: parse_simple(input)
   def part2(input) when is_binary(input), do: parse_enabled(input)
 end
-
-161 = Day03.part1("xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))")
-48 = Day03.part2("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))")
-
-input = File.read!("./input.txt")
-
-Day03.part1(input) |> IO.puts
-Day03.part2(input) |> IO.puts
