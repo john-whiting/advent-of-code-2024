@@ -8,10 +8,10 @@ defmodule Mix.Tasks.Main do
 
     day_module = String.to_existing_atom("Elixir.AdventOfCode2024.#{day}")
 
-    part1_result = apply(day_module, :part1, [input])
-    part2_result = apply(day_module, :part2, [input])
+    {part1_time, part1_result} = Benchmark.measure(fn -> apply(day_module, :part1, [input]) end)
+    {part2_time, part2_result} = Benchmark.measure(fn -> apply(day_module, :part2, [input]) end)
 
-    IO.puts("Part1: #{part1_result}")
-    IO.puts("Part2: #{part2_result}")
+    IO.puts("Part1 (completed in #{part1_time}ms): #{part1_result}")
+    IO.puts("Part2 (completed in #{part2_time}ms): #{part2_result}")
   end
 end
