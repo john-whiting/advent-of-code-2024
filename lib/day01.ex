@@ -4,18 +4,20 @@ defmodule AdventOfCode2024.Day01 do
     end
 
     def part1(input) do
-        parsed_lines = Enum.map(input, &parse_line/1)
-        {left, right} = Enum.unzip(parsed_lines)
-        Enum.zip([Enum.sort(left), Enum.sort(right)])
-            |> Enum.map(fn {left, right} -> abs(left - right) end )
+        {left, right} = String.split(input, ["\n", "\r", "\r\n"])
+            |> Stream.map(&parse_line/1)
+            |> Enum.unzip()
+        Stream.zip([Enum.sort(left), Enum.sort(right)])
+            |> Stream.map(fn {left, right} -> abs(left - right) end )
             |> Enum.sum
     end
 
     def part2(input) do
-        parsed_lines = Enum.map(input, &parse_line/1)
-        {left, right} = Enum.unzip(parsed_lines)
+        {left, right} = String.split(input, ["\n", "\r", "\r\n"])
+            |> Stream.map(&parse_line/1)
+            |> Enum.unzip()
         freqs = Enum.frequencies(right)
-        Enum.map(left, &(&1 * Map.get(freqs, &1, 0)))
+        Stream.map(left, &(&1 * Map.get(freqs, &1, 0)))
             |> Enum.sum
     end
 end
