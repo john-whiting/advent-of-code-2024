@@ -36,40 +36,27 @@ defmodule AdventOfCode2024.Day08 do
 
     defp generate_grid(grid, rows, y \\ 0)
     defp generate_grid(grid, [], _), do: grid
-    defp generate_grid(grid, [ row | tail ], y) do
-      add_antennas(grid, row, {y, 0}) |> generate_grid(tail, y + 1)
-    end
+    defp generate_grid(grid, [ row | tail ], y), do: add_antennas(grid, row, {y, 0}) |> generate_grid(tail, y + 1)
 
-    def from_lines(rows, node_generator) when is_list(rows) do
+    def from_lines(rows, node_generator) when is_list(rows), do:
       %Grid{node_generator: node_generator, max_bounds: {length(rows) - 1, String.length(hd(rows)) - 1}}
         |> generate_grid(rows)
-    end
   end
 
   alias AdventOfCode2024.Day08.Grid, as: Grid
   alias AdventOfCode2024.Utils, as: Utils
 
-  def repeat(pos = {y, x}, diff = {dy, dx}) do
-    {pos, fn -> repeat({y + dy, x + dx}, diff) end}
-  end
+  def repeat(pos = {y, x}, diff = {dy, dx}), do: {pos, fn -> repeat({y + dy, x + dx}, diff) end}
+  def once({y, x}, {dy, dx}), do: {{y + dy, x + dx}, nil}
 
-  def once({y, x}, {dy, dx}) do
-    {{y + dy, x + dx}, nil}
-  end
-
-  def part1(input) when is_binary(input) do
+  def get_antinodes(input, generator) when is_binary(input) do
     Utils.lines(input)
       |> Enum.to_list()
-      |> Grid.from_lines(&once/2)
+      |> Grid.from_lines(generator)
       |> Map.get(:antinodes)
       |> Enum.count()
   end
 
-  def part2(input) when is_binary(input) do
-    Utils.lines(input)
-      |> Enum.to_list()
-      |> Grid.from_lines(&repeat/2)
-      |> Map.get(:antinodes)
-      |> Enum.count()
-  end
+  def part1(input) when is_binary(input), do: get_antinodes(input, &once/2)
+  def part2(input) when is_binary(input), do: get_antinodes(input, &repeat/2)
 end
