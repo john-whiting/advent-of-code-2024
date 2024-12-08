@@ -12,31 +12,31 @@ defmodule AdventOfCode2024.Day08 do
     if yf >= yn and yn >= 0 and xf >= xn and xn >= 0, do: MapSet.put(antinodes, new_pos), else: antinodes
   end
 
-  def get_antinodes(antinodes, max_bounds, pos0 = {y0, x0}, pos1 = {y1, x1}, add_antinodes) do
+  def get_antinodes(antinodes, max_bounds, add_antinodes, pos0 = {y0, x0}, pos1 = {y1, x1}) do
     {dy, dx} = {y1 - y0, x1 - x0}
     add_antinodes.(antinodes, max_bounds, pos0, {-dy, -dx})
       |> add_antinodes.(max_bounds, pos1, {dy, dx})
   end
 
-  def get_antinode_cols("", _, _, antinodes, antennas, _), do: {antinodes, antennas}
-  def get_antinode_cols(<< ".", rest::binary>>, max_bounds, {y, x}, antinodes, antennas, add_antinodes), do: get_antinode_cols(rest, max_bounds, {y, x + 1}, antinodes, antennas, add_antinodes)
-  def get_antinode_cols(<< char::binary-size(1), rest::binary >>, max_bounds, pos = {y, x}, antinodes, antennas, add_antinodes) do
+  def get_antinode_cols("", _, _, _, antinodes, antennas), do: {antinodes, antennas}
+  def get_antinode_cols(<< ".", rest::binary>>, max_bounds, add_antinodes, {y, x}, antinodes, antennas), do: get_antinode_cols(rest, max_bounds, add_antinodes, {y, x + 1}, antinodes, antennas)
+  def get_antinode_cols(<< char::binary-size(1), rest::binary >>, max_bounds, add_antinodes, pos = {y, x}, antinodes, antennas) do
     existing_antennas = Map.get(antennas, char, MapSet.new())
     antinodes = Enum.reduce(
       existing_antennas,
       antinodes,
       fn antenna_pos, antinodes ->
-        get_antinodes(antinodes, max_bounds, antenna_pos, pos, add_antinodes)
+        get_antinodes(antinodes, max_bounds, add_antinodes, antenna_pos, pos)
       end
     )
     antennas = Map.put(antennas, char, MapSet.put(existing_antennas, pos))
-    get_antinode_cols(rest, max_bounds, {y, x + 1}, antinodes, antennas, add_antinodes)
+    get_antinode_cols(rest, max_bounds, add_antinodes, {y, x + 1}, antinodes, antennas)
   end
 
   def get_antinodes(grid, max_bounds, add_antinodes, y \\ 0, antinodes \\ MapSet.new(), antennas \\ %{})
   def get_antinodes([], _, _, _, antinodes, _), do: antinodes
   def get_antinodes([ row | tail ], max_bounds, add_antinodes, y, antinodes, antennas) do
-    {antinodes, antennas} = get_antinode_cols(row, max_bounds, {y, 0}, antinodes, antennas, add_antinodes)
+    {antinodes, antennas} = get_antinode_cols(row, max_bounds, add_antinodes, {y, 0}, antinodes, antennas)
     get_antinodes(tail, max_bounds, add_antinodes, y + 1, antinodes, antennas)
   end
 
