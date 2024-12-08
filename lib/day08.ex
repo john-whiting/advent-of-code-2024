@@ -7,47 +7,44 @@ defmodule AdventOfCode2024.Day08 do
       |> harmonics(max_bounds, {y + dy, x + dx}, diff)
   end
 
-  def add_antinode(antinodes, {yf, xf}, {y, x}) when y > yf or y < 0 or x > xf or x < 0, do: antinodes
-  def add_antinode(antinodes, _, pos), do: MapSet.put(antinodes, pos)
+  def pos_offset(antinodes, {yf, xf}, {y, x}, {dy, dx}) do
+    new_pos = {yn, xn} = {y + dy, x + dx}
+    if yf >= yn and yn >= 0 and xf >= xn and xn >= 0, do: MapSet.put(antinodes, new_pos), else: antinodes
+  end
 
-  def get_antinodes(antinodes, max_bounds, pos0 = {y0, x0}, pos1 = {y1, x1}, repeat) do
+  def get_antinodes(antinodes, max_bounds, pos0 = {y0, x0}, pos1 = {y1, x1}, add_antinodes) do
     {dy, dx} = {y1 - y0, x1 - x0}
-    if repeat == :repeat do
-      harmonics(antinodes, max_bounds, pos0, {-dy, -dx})
-        |> harmonics(max_bounds, pos1, {dy, dx})
-    else
-      add_antinode(antinodes, max_bounds, {y0 - dy, x0 - dx})
-        |> add_antinode(max_bounds, {y1 + dy, x1 + dx})
-    end
+    add_antinodes.(antinodes, max_bounds, pos0, {-dy, -dx})
+      |> add_antinodes.(max_bounds, pos1, {dy, dx})
   end
 
   def get_antinode_cols("", _, _, antinodes, antennas, _), do: {antinodes, antennas}
-  def get_antinode_cols(<< ".", rest::binary>>, max_bounds, {y, x}, antinodes, antennas, repeat), do: get_antinode_cols(rest, max_bounds, {y, x + 1}, antinodes, antennas, repeat)
-  def get_antinode_cols(<< char::binary-size(1), rest::binary >>, max_bounds, pos = {y, x}, antinodes, antennas, repeat) do
+  def get_antinode_cols(<< ".", rest::binary>>, max_bounds, {y, x}, antinodes, antennas, add_antinodes), do: get_antinode_cols(rest, max_bounds, {y, x + 1}, antinodes, antennas, add_antinodes)
+  def get_antinode_cols(<< char::binary-size(1), rest::binary >>, max_bounds, pos = {y, x}, antinodes, antennas, add_antinodes) do
     existing_antennas = Map.get(antennas, char, MapSet.new())
     antinodes = Enum.reduce(
       existing_antennas,
       antinodes,
       fn antenna_pos, antinodes ->
-        get_antinodes(antinodes, max_bounds, antenna_pos, pos, repeat)
+        get_antinodes(antinodes, max_bounds, antenna_pos, pos, add_antinodes)
       end
     )
     antennas = Map.put(antennas, char, MapSet.put(existing_antennas, pos))
-    get_antinode_cols(rest, max_bounds, {y, x + 1}, antinodes, antennas, repeat)
+    get_antinode_cols(rest, max_bounds, {y, x + 1}, antinodes, antennas, add_antinodes)
   end
 
-  def get_antinodes(grid, max_bounds, repeat, y \\ 0, antinodes \\ MapSet.new(), antennas \\ %{})
+  def get_antinodes(grid, max_bounds, add_antinodes, y \\ 0, antinodes \\ MapSet.new(), antennas \\ %{})
   def get_antinodes([], _, _, _, antinodes, _), do: antinodes
-  def get_antinodes([ row | tail ], max_bounds, repeat, y, antinodes, antennas) do
-    {antinodes, antennas} = get_antinode_cols(row, max_bounds, {y, 0}, antinodes, antennas, repeat)
-    get_antinodes(tail, max_bounds, repeat, y + 1, antinodes, antennas)
+  def get_antinodes([ row | tail ], max_bounds, add_antinodes, y, antinodes, antennas) do
+    {antinodes, antennas} = get_antinode_cols(row, max_bounds, {y, 0}, antinodes, antennas, add_antinodes)
+    get_antinodes(tail, max_bounds, add_antinodes, y + 1, antinodes, antennas)
   end
 
   def part1(input) when is_binary(input) do
     grid = Utils.lines(input)
       |> Enum.to_list()
 
-    get_antinodes(grid, {length(grid) - 1, String.length(hd(grid)) - 1}, :no)
+    get_antinodes(grid, {length(grid) - 1, String.length(hd(grid)) - 1}, &pos_offset/4)
       |> Enum.count()
   end
 
@@ -55,7 +52,7 @@ defmodule AdventOfCode2024.Day08 do
     grid = Utils.lines(input)
       |> Enum.to_list()
 
-    get_antinodes(grid, {length(grid) - 1, String.length(hd(grid)) - 1}, :repeat)
+    get_antinodes(grid, {length(grid) - 1, String.length(hd(grid)) - 1}, &harmonics/4)
       |> Enum.count()
   end
 end
