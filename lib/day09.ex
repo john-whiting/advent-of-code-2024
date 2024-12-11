@@ -106,18 +106,8 @@ defmodule AdventOfCode2024.Day09 do
   end
   def part2(input) when is_binary(input) do
     DiskMap.from_input(input)
-      # |> tap(fn map ->
-      #   file = File.open!("./before.txt", [:write])
-      #   IO.inspect(file, Map.get(map, :map), [limit: :infinity])
-      #   File.close(file)
-      # end)
       |> DiskMap.compress_no_frag()
       |> Map.get(:map)
-      # |> tap(fn map ->
-      #   file = File.open!("./after.txt", [:write])
-      #   IO.inspect(file, map, [limit: :infinity])
-      #   File.close(file)
-      # end)
       |> Tuple.to_list()
       |> Stream.with_index()
       |> Stream.map(fn {value, idx} -> if is_integer(value), do: value * idx, else: 0 end)
