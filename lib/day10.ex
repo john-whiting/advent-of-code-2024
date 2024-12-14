@@ -6,34 +6,20 @@ defmodule AdventOfCode2024.Day10 do
     def height_at(%HikingGuide{max_coord: {yf, xf}}, {y, x}) when y > yf or y < 0 or x > xf or x < 0, do: nil
     def height_at(%HikingGuide{elements: elements}, {y, x}), do: elements |> elem(y) |> elem(x)
 
-    def score(guide = %HikingGuide{trail_heads: trail_heads}), do: Stream.map(trail_heads, &(score(guide, &1))) |> Stream.map(&MapSet.size/1) |> Enum.sum()
-
-    defp score(guide, pos, cur_height \\ 0, prev_height \\ -1)
-    defp score(%HikingGuide{max_coord: {yf, xf}}, {y, x}, _, _) when y > yf or y < 0 or x > xf or x < 0, do: MapSet.new()
-    defp score(_, _, current_height, prev_height) when current_height != prev_height + 1, do: MapSet.new()
-    defp score(_, pos, 9, _), do: MapSet.new([pos])
-    defp score(guide = %HikingGuide{}, {y, x}, current_height, _) do
-      Stream.flat_map(
-        @directions,
-        fn {dy, dx} ->
-          next_pos = {y + dy, x + dx}
-          score(guide, next_pos, height_at(guide, next_pos), current_height)
-        end) |> Enum.filter(&(Kernel.!=(&1, nil))) |> MapSet.new()
-    end
-
-    def rating(guide = %HikingGuide{trail_heads: trail_heads}), do: Stream.map(trail_heads, &(rating(guide, &1))) |> Enum.sum()
+    def score(guide = %HikingGuide{trail_heads: trail_heads}), do: Stream.map(trail_heads, &(rating(guide, &1))) |> Stream.map(&Enum.uniq/1) |> Stream.map(&length/1) |> Enum.sum()
+    def rating(guide = %HikingGuide{trail_heads: trail_heads}), do: Stream.flat_map(trail_heads, &(rating(guide, &1))) |> Enum.count()
 
     defp rating(guide, pos, cur_height \\ 0, prev_height \\ -1)
-    defp rating(%HikingGuide{max_coord: {yf, xf}}, {y, x}, _, _) when y > yf or y < 0 or x > xf or x < 0, do: 0
-    defp rating(_, _, current_height, prev_height) when current_height != prev_height + 1, do: 0
-    defp rating(_, _, 9, _), do: 1
+    defp rating(%HikingGuide{max_coord: {yf, xf}}, {y, x}, _, _) when y > yf or y < 0 or x > xf or x < 0, do: []
+    defp rating(_, _, current_height, prev_height) when current_height != prev_height + 1, do: []
+    defp rating(_, pos, 9, _), do: [pos]
     defp rating(guide = %HikingGuide{}, {y, x}, current_height, _) do
-      Stream.map(
+      Enum.flat_map(
         @directions,
         fn {dy, dx} ->
           next_pos = {y + dy, x + dx}
           rating(guide, next_pos, height_at(guide, next_pos), current_height)
-        end) |> Enum.sum()
+        end)
     end
 
     defp add_trail_heads(guide = %HikingGuide{max_coord: {yf, xf}}) do
